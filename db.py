@@ -31,6 +31,9 @@ Base.metadata.create_all(engine)
 # db_session.add(user3)
 # db_session.commit()
 
-# print(db_session.query(User.name).all())
 
+# for user in db_session.query(User).all():
+#     db_session.delete(user)
+#     print(user)
+# db_session.commit()
 

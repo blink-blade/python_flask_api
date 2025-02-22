@@ -1,7 +1,7 @@
 
 """basic Flask app - demo of using a variable in a route"""
 import requests
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from db import db_session, User
 
 app = Flask(__name__)
@@ -13,7 +13,6 @@ def hello():
 
 @app.route('/read/<name>')
 def user(name):
-    user = db_session.query(User).filter_by(name=name).first()
     return user.as_dict()
 
 @app.route('/read_all/')
@@ -24,23 +23,24 @@ def read_all():
         users[user.name] = user.as_dict()
     return users
 
-@app.route('/post/password=<password>%name=<name>%email=<email>')
-def createe(password, name, email):
-    if requests.get(f'http://localhost:5000/read/{name}'):
-        return 'User already exists'
-    user = User(name=name, email=email, password=password)
-    db_session.add(user)
-    db_session.commit()
-    return 'User Added'
+@app.route('/user/add', methods=['POST'])
+def create():
+    if not request.is_json:
+        return {'error': 'Is not valid json.'}, 400
 
-@app.route('/post/password=<password>%name=<name>%email=<email>')
-def create(password, name, email):
-    if requests.get(f'http://localhost:5000/read/{name}'):
-        return 'User already exists'
-    user = User(name=name, email=email, password=password)
+    for string in ['name', 'password', 'email']:
+        if not request.json.get(string):
+            return {'error': f'Missing parameter: {string}'}, 400
+
+
+    user = db_session.query(User).filter_by(name=request.json.get('name')).first()
+    if user:
+        return {'error': f'User {user.name} already exists.'}, 400
+
+    user = User(name=request.json.get('name'), email=request.json.get('email'), password=request.json.get('password'))
     db_session.add(user)
     db_session.commit()
-    return 'User Added'
+    return user.as_dict()
 
 if __name__ == '__main__':
     app.run(debug=True)
