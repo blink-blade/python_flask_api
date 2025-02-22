@@ -24,11 +24,19 @@ def read_all():
         users[user.name] = user.as_dict()
     return users
 
-@app.route('/post/password=<password>_name=<name>_email=<email>')
-def create(name, password, email):
-    if db_session.query(User).filter_by(name=name).first():
-        return 'User already exists.'
+@app.route('/post/password=<password>%name=<name>%email=<email>')
+def createe(password, name, email):
+    if requests.get(f'http://localhost:5000/read/{name}'):
+        return 'User already exists'
+    user = User(name=name, email=email, password=password)
+    db_session.add(user)
+    db_session.commit()
+    return 'User Added'
 
+@app.route('/post/password=<password>%name=<name>%email=<email>')
+def create(password, name, email):
+    if requests.get(f'http://localhost:5000/read/{name}'):
+        return 'User already exists'
     user = User(name=name, email=email, password=password)
     db_session.add(user)
     db_session.commit()
