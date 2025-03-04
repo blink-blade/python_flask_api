@@ -1,0 +1,68 @@
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="//unpkg.com/alpinejs" defer></script>
+
+<script>
+    function Get(url) {
+        fetch(url)
+
+            // Converting received data to JSON
+            .then(response => response.json())
+            .then(json => {
+
+                // Create a variable to store HTML
+                let li = `<tr><th>Name</th><th>Email</th></tr>`;
+
+                // Loop through each data and add a table row
+                json.forEach(user => {
+                    li += `<tr>
+                        <td>${user.name} </td>
+                        <td>${user.email}</td>
+                    </tr>`;
+                });
+
+            // Display result
+            document.getElementById("users").innerHTML = li;
+        });
+    }
+
+    function Post(jsonData, url) {
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify(jsonData),
+            headers: { 'Content-Type': 'application/json' }
+        })
+
+        // Converting to JSON
+        .then(response => response.json())
+
+        // Displaying results to console
+        .then(json => console.log(json));
+    }
+
+    function Put(jsonData, url) {
+        fetch(url, {
+            method: "PUT",
+            body: JSON.stringify(jsonData),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+
+        // Converting to JSON
+        .then(response => response.json())
+
+        // Displaying results to console
+        .then(json => console.log(json));
+    }
+
+</script>
+
+
+<div class='container'>
+    <button class='btn btn-default' onclick='Get("http://localhost:5000/read_all");'>Get all</button>
+    <button class='btn btn-default' onclick='Get("http://localhost:5000/user/read/3");'>Get</button>
+    <button class='btn btn-default' onclick='Post({"name": "Johnjhgfjkfjkvjgvhffjgfjkgfjkgfjgcfjgfjkg", "password": "woirdshfsdf", "email": "aklshdou@gemashdf"}, "http://localhost:5000/user/add");'>Post</button>
+    <button class='btn btn-default' onclick='Put({"id": 3, "name": "asdf", "password": "woirdshfsdf", "email": "aklshdou@gemashdf"}, "http://localhost:5000/user/modify");'>Put</button>
+</div>
